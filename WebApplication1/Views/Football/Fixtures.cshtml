@@ -1,0 +1,28 @@
+﻿<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<h1>Fixtures</h1>
+<div class="container">
+
+    <table id="leaguematches" class=" table table-striped table-hover ">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Date</th>
+                <th>Home Team</th>
+                <th>Score</th>
+                <th>Away Team</th>
+            </tr>
+        </thead>
+        @foreach (var fixture in Json.Decode(Model))
+        {
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td>@fixture.Date</td>
+                    <td>@fixture.HomeTeam.Name</td>
+                    <td>@fixture.Score</td>
+                    <td>@fixture.AwayTeam.Name</td>
+                </tr>
+            </tbody>
+        }
+    </table>
+</div>

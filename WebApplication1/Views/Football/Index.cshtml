@@ -1,0 +1,125 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+    .scrollable-menu {
+        height: auto;
+        max-height: 500px;
+        overflow-x: hidden;
+    }
+</style>
+<h2>Football</h2>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">                
+                <li id="competitionlist" class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">League       <span class="caret"></span></a>
+                    <ul class="dropdown-menu scrollable-menu" style="width:auto" id="leaguelist" role="menu"></ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="row">
+    <ul class="breadcrumb">
+        <li class="active" ><a href="#">Score</a></li>
+        <li class="active" onclick="loadFixuresforNextSevendays()"><a href="#">Fixture</a></li>
+        <li class="active" onclick="loadTableView()"><a href="#">Table</a></li>
+    </ul>
+</div>
+<div class="row">
+    <div class="col-lg-8" id="partialcontainer">
+        <div class="jumbotron">
+            <h1>Football Scores</h1>
+            <p class="lead">Get Live Scores for Football matches around the world</p>
+            <p>Please select the league you want to view</p>
+        </div>
+    </div>
+</div>
+<script>
+    function loadTableView() {
+        var competion = $('#competitionlist').attr('competitioninfo');
+        var obje = JSON.parse(competion);
+        var url = "/football/Table/" + obje.id;
+        $.get(url)
+         .done(function (response) {
+             $("#partialcontainer").html(response);
+         }).error(function myfunction(error) {
+             var jsonResponse = $.parseJSON(error.responseJSON);
+             $("#partialcontainer").html(jsonResponse.Message);
+         });
+    }
+
+    function loadFixuresforNextSevendays() {
+        var competion = $('#competitionlist').attr('competitioninfo');
+        var obje = JSON.parse(competion);
+        var url = "/football/Fixtures/" + obje.id;
+        $.get(url)
+         .done(function (response) {
+             $("#partialcontainer").html(response);
+         }).error(function myfunction(error) {
+             var jsonResponse = $.parseJSON(error.responseJSON);
+             $("#partialcontainer").html(jsonResponse.Message);
+         });
+    }
+
+    function loadcompetetions() {
+        var url = "/football/Leagues";
+        $.get(url)
+         .done(function (response) {
+             var ulist = document.getElementById("leaguelist");;
+             var arr = $.parseJSON(response);
+             var region = '';
+             for (var i = 0; i < arr.length; i++) {
+                 var newNumberListItem = document.createElement("li");
+
+
+                 //create anchor node
+                 var newAnchorElement = document.createElement('a');
+                 newNumberListItem.appendChild(newAnchorElement);
+                 var stri = JSON.stringify(arr[i]);
+                 newAnchorElement.setAttribute('competitioninfo', stri);
+                 newAnchorElement.onclick = onaclick;
+
+                 
+
+                 if (region == '') {
+                     region = arr[i].region;
+                 }
+                 
+                 //create new text node
+                 var numberListValue = document.createTextNode(arr[i].name + " (" + arr[i].region + ")");
+                 
+                 //add text node to li element
+                 newAnchorElement.appendChild(numberListValue);
+
+                 //add new list element built in previous steps to unordered list
+                 //called numberList
+                 ulist.appendChild(newNumberListItem);
+             }
+             
+         });
+    }
+
+    function onaclick(event) {
+        var d = $(this).attr('competitioninfo');
+        $('#competitionlist').attr('competitioninfo', d);
+        loadFixuresforNextSevendays();
+    }
+    
+    window.onload = loadcompetetions
+
+</script>
+
